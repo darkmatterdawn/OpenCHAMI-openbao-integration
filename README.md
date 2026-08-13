@@ -1,3 +1,6 @@
+# WARNING
+(!) These scripts make considerable changes to an existing OpenCHAMI installation. In their current state, they're meant to be a proof of concept. They will be heavily edited to be more streamlined with existing patterns and practices in OpenCHAMI installation. What is here at the moment is just a proof of concept.
+
 # Description
 First working draft of integrating openbao vault into an existing OpenCHAMI setup.
 The existing setup was created by following the steps in the tutorial.
