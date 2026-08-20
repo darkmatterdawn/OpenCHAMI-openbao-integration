@@ -31,6 +31,32 @@ if [ -d /etc/openchami/openbao ]; then
 fi
 
 
+# get user's confirmation to continue
+FORCE=false
+
+while getopts ":f" opt; do
+  case $opt in
+    f)
+      FORCE=true
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+  esac
+done
+
+if [ "$FORCE" != true ]; then
+    read -n 1 -p "WARNING: Running this script will change your existing OpenCHAMI setup. If this script fails for some reason, your OpenCHAMI setup most likely will not work anymore. Having an up-to-date backup is strongly recommended. Are you sure you want to continue? (y/N): " confirm
+    echo
+
+    if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+        echo "Aborted."
+        exit 1
+    fi
+fi
+
+
 # preparations
 BACKUP_FILENAME_EXTENSION="openbao.bak.$(date +%Y%m%d%H%M)"
 OPENBAO_IMAGE="quay.io/openbao/openbao:2.2.0"
