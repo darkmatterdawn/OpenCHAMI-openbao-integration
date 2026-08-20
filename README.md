@@ -1,47 +1,17 @@
-# WARNING
-(!) These scripts make considerable changes to an existing OpenCHAMI installation. In their current state, they're meant to be a proof of concept. They will be heavily edited to be more streamlined with existing patterns and practices in OpenCHAMI installation. What is here at the moment is just a proof of concept.
-
 # Description
-First working draft of integrating openbao vault into an existing OpenCHAMI setup.
-The existing setup was created by following the steps in the tutorial.
+A script to set up an OpenBao vault to be used in an existing OpenCHAMI installation.
+This procedure was developed for, and has been tested in, quadlet-based OpenCHAMI setups using recent openchami-release versions up until 0.1.9.
+It has not been tested yet with release 0.2.0.
 
-# Notes
-The place where certain things happen, and their order, are still somewhat sketchy. (Kimi 2.7 Code has the right spirit, but it needs a little more guidance / manual clean-up work).
-However, it does work, and I publish the first draft in that state already so folks can start working on their own setups.
+The setup mirrors what the OpenCHAMI quadlet setup in the openchami-release does, as in, the main container relies on an init-container.
+However: To avoid maintaining a clone of the OpenBao container within the OpenCHAMI universe, the upstream OpenBao container is used with an entrypoint script mounted from the host.
+For the same reason, there is no openbao-init container, but rater an openbao-init service which follows the same design principle.
+
+Overall, this procedure makes the minimal amount of necessary changes to the existing OpenCHAMI setup and tries to keep things simple, similar and without too many dependencies, making maintenance and debugging easier.
 
 # How to set up openbao vault
-As mentioned, this requires a pre-existing OpenCHAMI installation. Then, follow these steps:
-
 ```
-# 1. Extend bootstrap (only needed once per host)
-sudo ./01-extend-bootstrap-openbao.sh
-
-# 2. Apply all OpenBao file modifications
-sudo ./02-apply-openbao-modifications.sh
-
-# 3. If the target is already running on this host, stop it first so the
-#    modified services are recreated cleanly.
-sudo systemctl stop openchami.target
-
-# 4. First bootstrap pass: creates postgres/step-ca secrets, env vars, etc.
-#    OpenBao setup is skipped because the certificate does not exist yet.
-sudo /usr/libexec/openchami/bootstrap_openchami.sh
-
-# 5. Start step-ca so the ACME provisioner is reachable
-sudo systemctl start step-ca.service
-
-# 6. Issue the first OpenBao certificate
-sudo /etc/openchami/scripts/openbao-cert-renewal.sh
-
-# 7. Second bootstrap pass: now creates openbao_unseal_key,
-#    openbao_root_token and openbao_token secrets.
-sudo /usr/libexec/openchami/bootstrap_openchami.sh
-
-# 8. Start the full stack
-sudo systemctl start openchami.target
-
-# 9. Enable automatic certificate renewal
-sudo systemctl enable --now openbao-cert-renewal.timer
+sudo ./openbao-setup.sh 2>&1 | tee openbao-setup.log
 ```
 
 # Verification
@@ -58,6 +28,8 @@ sudo podman exec -e BAO_SKIP_VERIFY=true -e BAO_TOKEN=$ROOT openbao bao status
 ### Create components in SMD
 Example:
 ```
+# requires ochami cli to be configured and auth token exported in a variable with the expected name
+
 cat <<'EOF' > x5000c0s0b0-rfe.yaml
 RedfishEndpoints:
   - id: x5000c0s0b0
