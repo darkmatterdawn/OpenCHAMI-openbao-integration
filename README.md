@@ -13,6 +13,7 @@ Overall, this procedure makes the minimal amount of necessary changes to the exi
 ```
 sudo ./openbao-setup.sh 2>&1 | tee openbao-setup.log
 ```
+Use `-f` to force the script execution without interactive user confirmation.
 
 # Verification
 ## Services
