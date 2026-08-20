@@ -56,6 +56,8 @@ if [ "$FORCE" != true ]; then
     fi
 fi
 
+echo "Running openbao-setup. This will take a moment..."
+
 
 # preparations
 BACKUP_FILENAME_EXTENSION="openbao.bak.$(date +%Y%m%d%H%M)"
@@ -182,7 +184,9 @@ CERT_MOUNT=$(podman volume inspect --format '{{.Mountpoint}}' "$CERTS_VOL" 2>/de
 TMPDIR1=""
 
 cleanup() {
-    [ -n "$TMPDIR1" ] && rm -rf "$TMPDIR1"
+    if [ -n "$TMPDIR1" ]; then
+        rm -rf "$TMPDIR1"
+    fi
 }
 trap cleanup EXIT
 
