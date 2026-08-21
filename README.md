@@ -29,7 +29,8 @@ sudo podman exec -e BAO_SKIP_VERIFY=true -e BAO_TOKEN=$ROOT openbao bao status
 ### Create components in SMD
 Example:
 ```
-# requires ochami cli to be configured and auth token exported in a variable with the expected name
+# requires ochami cli to be configured and auth token exported in a variable
+# with the expected name
 
 cat <<'EOF' > x5000c0s0b0-rfe.yaml
 RedfishEndpoints:
